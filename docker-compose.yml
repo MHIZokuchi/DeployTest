@@ -1,0 +1,68 @@
+version: '3'
+services:
+  hush-server:
+    #restart: always
+    container_name: hush-server
+    build: ./Hush_Server-master/Hush_Server-master
+    ports:
+      - 5300:5300
+    volumes:
+      - ./server:/code
+
+  hush-client:
+    #restart: always
+    container_name: hush-client
+    build: ./Hush_Client-setCurrentIdBranch/Hush_Client-setCurrentIdBranch
+    depends_on: 
+      - hush-server
+    ports:
+      - 80:3000
+    volumes:
+      - ./client:/code
+    
+  
+#   prometheus:
+#     image: prom/prometheus:v2.21.0
+#     container_name: prometheus
+#     ports:
+#       - 9000:9090
+#     volumes:
+#       - ./prometheus:/etc/prometheus
+#       - prometheus-data:/prometheus
+#     command: --web.enable-lifecycle  --config.file=/etc/prometheus/prometheus.yml
+#     networks:
+#       - monitoring
+
+#   grafana:
+#     image: grafana/grafana:7.1.5
+#     container_name: grafana
+#     volumes:
+#       - grafana:/var/lib/grafana
+#       - ./grafana/provisioning:/etc/grafana/provisioning
+#     environment:
+#       - GF_AUTH_DISABLE_LOGIN_FORM=true
+#       - GF_AUTH_ANONYMOUS_ENABLED=true
+#       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+#     ports:
+#       - 3000:3000
+#     networks:
+#       - monitoring
+#   cadvisor:
+#     image: gcr.io/google-containers/cadvisor:v0.34.0
+#     container_name: cadvisor
+#     volumes:
+#       - /:/rootfs:ro
+#       - /var/run:/var/run:rw
+#       - /sys:/sys:ro
+#       - /var/lib/docker:/var/lib/docker:ro
+#       #- /cgroup:/cgroup:ro #doesn't work on MacOS only for Linux
+#     restart: unless-stopped
+#     privileged: true 
+#     expose:
+#       - 8080
+# volumes:
+#  prometheus-data:
+#  grafana:
+
+networks: 
+  monitoring:
