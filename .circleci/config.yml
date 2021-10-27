@@ -4,7 +4,7 @@ version: 2.1
 jobs:
   build:
     docker:
-     - image: circleci/cci-demo-docker-primary:0.0.2
+     - image: docker:17.05.0-ce-git
     steps:
       - setup_remote_docker:
           docker_layer_caching: false
@@ -13,20 +13,15 @@ jobs:
       - checkout
 
       - run:
-          name: Install Docker Compose
+          name: Install dependencies
           command: |
-            set -x
-            curl -L https://github.com/docker/compose/releases/download/1.11.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
-            chmod +x /usr/local/bin/docker-compose
+            apk add --no-cache py-pip=9.0.0-r1
+            pip install docker-compose==1.15.0
 
       - run:
-          name: Start container and verify it's working
+          name: Run tests
           command: |
-            set -x
             docker-compose up -d
-            # docker-compose will start 2 containers, the one with service will be named `contacts`
-            # we start another container with curl in the same network as `contacts`, this way we have
-            # all exposed ports from `contacts` available on `localhost` in this new container
            
 
 
