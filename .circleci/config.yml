@@ -1,0 +1,41 @@
+version: 2
+jobs:
+  build_server:
+    docker:
+      - image: circleci/node:16
+        environment:
+          SERVICE_NAME_SERVER: hush_server
+          IMAGE_SERVER: philcz16/hush-server
+    steps:
+      - checkout
+      - setup_remote_docker 
+      
+      - run:
+          name: Build Hush Sever Docker image
+          command: |
+            docker build -t $IMAGE_SERVER:latest ./Hush_Server-master/Hush_Server-master
+            echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+            docker push $IMAGE_SERVER:latest
+
+  build_client:
+    docker:
+      - image: circleci/node:16
+        environment:
+          SERVICE_NAME_CLIENT: hush_client
+          IMAGE_CLIENT: philcz16/hush-client
+
+    steps:
+      - checkout
+      - setup_remote_docker 
+      - run:
+          name: Build Hush Client Docker image
+          command: |
+            docker build -t $IMAGE_CLIENT:latest ./Hush_Client-setCurrentIdBranch/Hush_Client-setCurrentIdBranch
+            echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+            docker push $IMAGE_CLIENT:latest
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build_server
+      - build_client
